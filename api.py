@@ -1,8 +1,9 @@
 from flask import Flask, request, json
 from flask_cors import CORS
 from food_index_calc import FoodIndex
-from db import getMenu, get_db_connection
+from db import getMenu, get_db_connection, getAirlines
 from handle_food_index import handle_food_index
+import json
 
 app = Flask(__name__)
 CORS(app)
@@ -47,6 +48,30 @@ def createMenu():
             return menu_json, 404
     except Exception as e:
         raise e
+    
+
+@app.route('/airlines', methods=['GET'])
+def get_airlines():
+    try:
+        conn = get_db_connection()
+        airlines = getAirlines(conn)  # Вызываем вашу функцию для получения данных из базы данных
+        
+        
+        # Создаем список объектов с полями id и name
+        data = [{'id': str(item[0]), 'name': item[1]} for item in airlines]
+
+        # Преобразуем список объектов в JSON-массив
+        json_array = json.dumps(data, ensure_ascii=False)
+
+        # print(airlines)
+        if (airlines):
+                # airlines_json = json.dumps(airlines, ensure_ascii=False)
+                return json_array, 200
+        else:
+            return json({'error': 'No airlines found'}), 404
+    except Exception as e:
+        raise e
+    
     
 if __name__ == '__main__':
     conn = get_db_connection()

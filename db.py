@@ -39,3 +39,19 @@ def getMenu(conn, airline_name, quality_type):
             
         cursor.close()
         conn.close()
+
+
+def getAirlines(conn):
+    if(conn != None):
+        cursor = conn.cursor()
+
+        cursor.execute(f'''
+                    SELECT *
+                    FROM airline
+        ''')
+
+        result = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        return result
