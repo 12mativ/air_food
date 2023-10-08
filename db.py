@@ -1,37 +1,41 @@
 import psycopg2
+import os
+from dotenv import load_dotenv
 
-db_params = {
-    'host': 'localhost',
-    'port': 5000,
-    'database': 'air_food',  
-    'user': 'postgres',
-    'password': 'j4Ema3_w1'
-}
+load_dotenv()
 
-def getMenu(airline_name, quality_type):
-    conn = psycopg2.connect(**db_params)
+# db_params = {
+#     'host': os.environ['DB_HOST'],
+#     'port': os.environ['DB_PORT'],
+#     'database': os.environ['DB_DATABASE'],  
+#     'user': os.environ['DB_USER'],
+#     'password': os.environ['DB_PASSWORD']
+# }
 
-    cursor = conn.cursor()
+def get_db_connection():
+    conn = psycopg2.connect(os.environ['DB_URL'])
+    return conn
 
-    cursor.execute(f'''
-                SELECT menu.*
-                FROM menu
-                JOIN airlines ON menu.airline_id = airlines.id
-                WHERE airlines.airline_name = '{airline_name}';
-    ''')
+def getMenu(conn, airline_name, quality_type):
+    if(conn != None):
+        cursor = conn.cursor()
 
-    result = cursor.fetchall()
+        cursor.execute(f'''
+                    SELECT menu.*
+                    FROM menu
+                    JOIN airline ON menu.airline_id = airline.id
+                    WHERE airline.name = '{airline_name}';
+        ''')
 
-    found_medium_menu = False
-    for menu in result:
-        if (menu[1] == quality_type):
-            found_medium_menu = True
-            return menu
-    if not found_medium_menu:
-        return None
-        
-    cursor.close()
-    conn.close()
+        result = cursor.fetchall()
 
-menu = getMenu('Аэрофлот', 'good')
-print(menu)
+        found_medium_menu = False
+        for menu in result:
+            if (menu[1] == quality_type):
+                found_medium_menu = True
+                return menu
+        if not found_medium_menu:
+            return None
+            
+        cursor.close()
+        conn.close()
