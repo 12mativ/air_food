@@ -42,7 +42,7 @@ def getMenu(conn, airline_name, quality_type):
 
 
 def getAirlines(conn):
-    if(conn != None):
+    if (conn != None):
         cursor = conn.cursor()
 
         cursor.execute(f'''
