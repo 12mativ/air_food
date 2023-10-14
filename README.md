@@ -21,9 +21,6 @@ source venv/bin/activate  # Для Windows используйте 'venv\Scripts\
 
 ```
 pip install -r .\reqs.txt
-pip install flask-cors
-pip install python-dotenv
-pip install psycopg2
 ```
 
 4. Укажите параметры для подключения к базе данных в файле `.env`. Пример `.env`:
@@ -35,7 +32,7 @@ DB_URL=db_url
 5. Запустите приложение:
 
 ```
-python api.py
+python .\api.py
 ```
 
 После этого ваше приложение будет доступно по адресу http://localhost:8000/.
