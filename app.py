@@ -78,7 +78,7 @@ class AirlinesResource(Resource):
         """
         try:
             conn = get_db_connection()
-            airlines = getAirlines(conn)  # Вызываем вашу функцию для получения данных из базы данных
+            airlines = getAirlines(conn)
             result = [{'id': item[0], 'name': item[1]} for item in airlines]
             if (result):
                 return {'airlines': result}, 200
