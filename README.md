@@ -14,13 +14,16 @@ git clone https://github.com/12mativ/air_food.git
 
 ```
 python -m venv venv
-source venv/bin/activate  # Для Windows используйте 'venv\Scripts\activate'
+source venv/bin/activate  
+
+# Для Windows используйте 
+'venv\Scripts\activate'
 ```
 
 3. Установите зависимости проекта:
 
 ```
-pip install -r .\reqs.txt
+pip install -r .\requirements.txt
 ```
 
 4. Укажите параметры для подключения к базе данных в файле `.env`. Пример `.env`:

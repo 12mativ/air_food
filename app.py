@@ -20,8 +20,6 @@ airline_model = api.model('Airline', {
         'id': fields.String,
         'name': fields.String,
     }))),
-    'id': fields.String,
-    'name': fields.String,
 })
 
 
