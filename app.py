@@ -30,7 +30,7 @@ class MenuResource(Resource):
     @api.expect(menu_model)
     def post(self):
         """
-        Calculate the food index and retrieve menu for the given parameters.
+        Retrieve menu for the given parameters.
         """
         try:
             reqBody = request.json
@@ -40,25 +40,26 @@ class MenuResource(Resource):
             elif ("class_of_service_data") not in reqBody:
                 error_message = "Параметр 'class_of_service_data' отсутствует в запросе."
                 return {'error': error_message}, 400
+            elif ("takeoff_time") not in reqBody:
+                error_message = "Параметр 'takeoff_time' отсутствует в запросе."
+                return {'error': error_message}, 400
+            elif ("landing_time") not in reqBody:
+                error_message = "Параметр 'landing_time' отсутствует в запросе."
+                return {'error': error_message}, 400
             elif ("airline_name") not in reqBody:
                 error_message = "Параметр 'airline_name' отсутствует в запросе."
                 return {'error': error_message}, 400
             
-            food_index = FoodIndex()
 
-            food_index.calculate_index(
-                flight_duration=reqBody["flight_duration"], 
-                class_of_service_data=reqBody["class_of_service_data"],
-            )
-
-            current_index = food_index.get_index()
-            current_quality_type = handle_food_index(current_index)
-
-            # TODO DELETE PRINTS    
-            print(f'Current index: {current_index}')
-            print(f'Current quality type: {current_quality_type}')
-
-            menu = getMenu(conn, reqBody["airline_name"], current_quality_type)
+            menu = getMenu(
+                conn, 
+                reqBody["airline_name"], 
+                reqBody["flight_duration"], 
+                reqBody["class_of_service_data"],
+                reqBody["takeoff_time"],
+                reqBody["landing_time"],
+                reqBody["special_menu_codes"],
+            ) 
             if (menu):
                 menu_data = {'menu': menu[3]}
                 return menu_data, 200
