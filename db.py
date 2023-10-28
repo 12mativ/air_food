@@ -28,6 +28,7 @@ def calculate_eating_amount(flight_duration):
         return None
     
 def calculate_menu_timetype(takeoff_time, landing_time, flight_duration):
+    return
 
 def recognize_time_interval(current_time):
     
@@ -44,15 +45,16 @@ def recognize_time_interval(current_time):
     # Текущее время, для которого вы хотите определить принадлежность к интервалам
     # Проверка, к какому интервалу относится текущее время
     if breakfast_start <= current_time <= breakfast_end:
-        print("Завтрак")
+        return ("Завтрак")
     elif lunch_start <= current_time <= lunch_end:
-        print("Обед")
+        return ("Обед")
     elif current_time >= dinner_start or current_time <= dinner_end:
-        print("Ужин")
+        return ("Ужин")
     else:
-        print("Не время для еды")
+        return ("Введено неверное время")
 
 def calculate_count_food(flight_duration, class_of_service_data):
+    return
 
 def getMenu(conn, airline_name):
     if(conn != None):
