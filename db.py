@@ -28,7 +28,7 @@ def calculate_eating_amount(flight_duration):
         return None
     
 def calculate_menu_timetype(takeoff_time, landing_time, flight_duration):
-    return
+    return {'time_type': ['breakfast', 'lunch'], 'temperature_type': 'hot'}
 
 def recognize_time_interval(current_time):
     

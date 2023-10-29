@@ -1,8 +1,6 @@
 from flask import Flask, request, json, jsonify
 from flask_cors import CORS
-from food_index_calc import FoodIndex
 from db import getMenu, get_db_connection, getAirlines
-from handle_food_index import handle_food_index
 import json
 from flask_restx import Api, Resource, fields, marshal
 
