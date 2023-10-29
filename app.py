@@ -20,6 +20,8 @@ airline_model = api.model('Airline', {
     }))),
 })
 
+conn = None
+
 @api.route('/menu')
 class MenuResource(Resource):
     @api.expect(menu_model)
@@ -28,6 +30,7 @@ class MenuResource(Resource):
         Retrieve menu for the given parameters.
         """
         try:
+            conn = get_db_connection()
             reqBody = request.json
             if ("flight_duration") not in reqBody:
                 error_message = "Параметр 'flight_duration' отсутствует в запросе."
@@ -84,5 +87,4 @@ class AirlinesResource(Resource):
     
     
 if __name__ == '__main__':
-    conn = get_db_connection()
     app.run(debug=True, port=8000)

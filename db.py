@@ -108,6 +108,7 @@ def getMenu(conn, airline_name, flight_duration, class_of_service_data, takeoff_
             special_menu.extend(special_menus)
 
         cursor.close()
+        conn.close()
         return {"menu": menu, "special_menu": special_menu} 
 
 
@@ -123,4 +124,5 @@ def getAirlines(conn):
         result = cursor.fetchall()
         
         cursor.close()
+        conn.close()
         return result
