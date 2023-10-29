@@ -20,9 +20,6 @@ airline_model = api.model('Airline', {
     }))),
 })
 
-
-conn = None
-
 @api.route('/menu')
 class MenuResource(Resource):
     @api.expect(menu_model)

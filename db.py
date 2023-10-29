@@ -6,14 +6,6 @@ from utils import calculate_eating_amount, get_menu_array
 
 load_dotenv()
 
-# db_params = {
-#     'host': os.environ['DB_HOST'],
-#     'port': os.environ['DB_PORT'],
-#     'database': os.environ['DB_DATABASE'],  
-#     'user': os.environ['DB_USER'],
-#     'password': os.environ['DB_PASSWORD']
-# }
-
 def get_db_connection():
     conn = psycopg2.connect(os.environ['DB_URL'])
     return conn
@@ -131,5 +123,4 @@ def getAirlines(conn):
         result = cursor.fetchall()
         
         cursor.close()
-        conn.close()
         return result
