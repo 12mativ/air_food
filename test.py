@@ -88,8 +88,33 @@ def recognize_time_amount(flight_duration, takeoff_time):
                    dinner_time += (flight_duration_in_minutes / 60) - 6
                 else:
                     lunch_time = flight_duration_in_minutes / 60
-                    return {"breakfast": breakfast_time, "lunch": lunch_time, "dinner": dinner_time}
-
+                return {"breakfast": breakfast_time, "lunch": lunch_time, "dinner": dinner_time}
         
 
-print(recognize_time_amount(12, time(16, 0)))
+print(recognize_time_amount(12, time(4, 30)))
+  
+
+
+
+# 1) difference1 = max_завтрак_time - takeoff_time (= 3)
+# 2) if (difference1 > flight_duration) {
+#  время_полета_завтрак = flight_duration
+#  return
+# } else {
+#  flight_duration -= difference1 (flight_duration = 9)
+
+#  if (flight_duration > обед_time) {
+#    flight_duration -= обед_time (flight_duration = 3)
+#  } else {
+#    время_полета_обед = flight_duration
+#    return
+#  }
+# }
+# 4) if (flight_duration < ужин_time) {
+#  время_полета_ужин = flight_duration
+#  return
+# } else {
+#  flight_duration -= ужин_time
+#  время_полета_ужин = flight_duration
+#  return
+# }    
