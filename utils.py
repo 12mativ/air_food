@@ -84,16 +84,47 @@ def recognize_time_amount(flight_duration, takeoff_time):
                 breakfast_time = (time_to_minutes(breakfast_end) - time_to_minutes(breakfast_start)) / 60
                 flight_duration_in_minutes -= (time_to_minutes(breakfast_end) - time_to_minutes(breakfast_start))
                 if(flight_duration_in_minutes / 60 > 6):
-                   lunch_time = 6
+                   lunch_time = 6.0
                    dinner_time += (flight_duration_in_minutes / 60) - 6
                 else:
                     lunch_time = flight_duration_in_minutes / 60
                 return {"breakfast": breakfast_time, "lunch": lunch_time, "dinner": dinner_time}
         
 
-print(recognize_time_amount(12, time(4, 30)))
+
+
+
+def calculate_eating_amount(flight_duration):
+    if(flight_duration >= 1 and flight_duration <= 3):
+        return {'amount': 1, 'type': 'cold'}
+    elif(flight_duration > 3 and flight_duration <= 6):
+        return {'amount': 1, 'type': 'hot'}
+    elif(flight_duration > 6):
+        return{'amount': 2, 'type': 'hot'}
+    else:
+        return None
   
 
+def get_menu_array(flight_duration, takeoff_time):
+    eating_amount_info = calculate_eating_amount(flight_duration)
+    time_amount_info = recognize_time_amount(flight_duration, takeoff_time)
+
+    menu_array = []
+
+    if(eating_amount_info['amount'] == 1):
+        if(time_amount_info['dinner'] == time_amount_info['breakfast']):
+            menu_array.append('dinner')
+        else:
+            menu_array.append(max(time_amount_info, key=time_amount_info.get))
+        return menu_array
+    elif(eating_amount_info['amount'] == 2):
+        sorted_time_amount_info = dict(sorted(time_amount_info.items(), key=lambda x: x[1], reverse=True))
+        menu_array.append(list(sorted_time_amount_info.keys())[0])
+        menu_array.append(list(sorted_time_amount_info.keys())[1])
+        return menu_array
+
+
+print(get_menu_array(4, time(8, 0)))
 
 
 # 1) difference1 = max_завтрак_time - takeoff_time (= 3)
