@@ -97,7 +97,7 @@ def calculate_eating_amount(flight_duration):
     elif(flight_duration > 3 and flight_duration <= 6):
         return {'amount': 1, 'type': 'hot'}
     elif(flight_duration > 6):
-        return{'amount': 2, 'type': 'hot'}
+        return {'amount': 2, 'type': 'hot'}
     else:
         return None
   

@@ -2,6 +2,7 @@ import psycopg2
 from datetime import datetime, time
 import os
 from dotenv import load_dotenv
+from utils import calculate_eating_amount, get_menu_array
 
 load_dotenv()
 
@@ -17,61 +18,105 @@ def get_db_connection():
     conn = psycopg2.connect(os.environ['DB_URL'])
     return conn
 
-def calculate_eating_amount(flight_duration):
-    if(flight_duration >= 1 and flight_duration <= 3):
-        return {'amount': 1, 'type': 'cold'}
-    elif(flight_duration > 3 and flight_duration <= 6):
-        return {'amount': 1, 'type': 'hot'}
-    elif(flight_duration > 6):
-        return{'amount': 2, 'type': 'hot'}
+def float_to_time(current_time):
+    hours = int(current_time)
+    minutes = int((current_time - hours) * 60)
+
+    return time(hours, minutes) 
+
+
+def get_airline_id(conn, airline_name):
+    cursor = conn.cursor()
+    cursor.execute(f'SELECT id FROM airline WHERE name = %s', (airline_name,))
+    result = cursor.fetchone()
+    cursor.close()
+    if result:
+        return result[0]
     else:
+        # Если авиакомпания не найдена, можно вернуть None или выбросить исключение
         return None
-    
-def calculate_menu_timetype(takeoff_time, landing_time, flight_duration):
-    return {'time_type': ['breakfast', 'lunch'], 'temperature_type': 'hot'}
 
-def recognize_time_interval(current_time):
-    
-    # Определение времени начала и конца каждого интервала
-    breakfast_start = time(5, 0)
-    breakfast_end = time(9, 59)
 
-    lunch_start = time(10, 0)
-    lunch_end = time(16, 0)
+def add_special_menus(conn, airline_id, special_menu_codes):
+    special_menus = []
+    cursor = conn.cursor()
+    for special_menu_code in special_menu_codes:
+        cursor.execute('''
+            SELECT
+                smd.specialmenu_id,
+                d.name
+            FROM
+                specialmenudish AS smd
+            JOIN
+                dish AS d ON smd.dish_id = d.id
+            WHERE
+                smd.specialmenu_id IN (
+                    SELECT id FROM specialmenu WHERE code = %s AND airline_id = %s
+                )
+            LIMIT %s;
+        ''', (special_menu_code["code"], airline_id, special_menu_code["amount"]))
+        special_menu_dishes = cursor.fetchall()
+        if special_menu_dishes:
+            special_menu = {
+                "code": special_menu_code["code"],
+                "dishes": [dish[1] for dish in special_menu_dishes]
+            }
+            special_menus.append(special_menu)
+    cursor.close()
+    return special_menus
 
-    dinner_start = time(16, 0)
-    dinner_end = time(4, 59)  # До 4:59 утра следующего дня
+# Обновление функции getMenu
+def getMenu(conn, airline_name, flight_duration, class_of_service_data, takeoff_time, landing_time, special_menu_codes):
+    airline_id = get_airline_id(conn, airline_name)
 
-    # Текущее время, для которого вы хотите определить принадлежность к интервалам
-    # Проверка, к какому интервалу относится текущее время
-    if breakfast_start <= current_time <= breakfast_end:
-        return ("Завтрак")
-    elif lunch_start <= current_time <= lunch_end:
-        return ("Обед")
-    elif current_time >= dinner_start or current_time <= dinner_end:
-        return ("Ужин")
-    else:
-        return ("Введено неверное время")
-
-def calculate_count_food(flight_duration, class_of_service_data):
-    return
-
-def getMenu(conn, airline_name):
-    if(conn != None):
+    if airline_id is not None:
         cursor = conn.cursor()
 
-        cursor.execute(f'''
-                    SELECT menu.*
-                    FROM menu
-                    JOIN airline ON menu.airline_id = airline.id
-                    WHERE airline.name = '{airline_name}';
-        ''')
+        eating_amount_info = calculate_eating_amount(flight_duration)
+        menu_array_info = get_menu_array(flight_duration, float_to_time(takeoff_time))
 
-        result = cursor.fetchall()
+        menu = []
+        special_menu = [] 
 
-        
+        # Добавляем основные меню
+        for service_class in class_of_service_data:
+            cursor.execute(f'''
+                SELECT
+                    m.quality_type,
+                    m.time_type,
+                    m.temperature_type,
+                    ARRAY_AGG(d.name) AS dishes
+                FROM
+                    menu AS m
+                JOIN
+                    menudish AS md ON m.id = md.menu_id
+                JOIN
+                    dish AS d ON md.dish_id = d.id
+                WHERE
+                    m.airline_id = %s
+                    AND m.quality_type = %s
+                    AND m.time_type = %s
+                    AND m.temperature_type = %s
+                GROUP BY
+                    quality_type, time_type, temperature_type;
+            ''', (airline_id, service_class["type"], menu_array_info[0], eating_amount_info["type"]))
+
+            result = cursor.fetchall()
+            if result:
+                menu.append({
+                    "quality_type": service_class["type"],
+                    "time_type": menu_array_info[0],
+                    "temperature_type": eating_amount_info["type"],
+                    "dishes": result[0][3]
+                })
+
+        # Добавляем специальные меню
+        if (special_menu_codes):
+            special_menus = add_special_menus(conn, airline_id, special_menu_codes)
+            special_menu.extend(special_menus)
+
         cursor.close()
-        conn.close()
+        return {"menu": menu, "special_menu": special_menu} 
 
 
 def getAirlines(conn):

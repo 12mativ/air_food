@@ -59,8 +59,7 @@ class MenuResource(Resource):
                 reqBody["special_menu_codes"],
             ) 
             if (menu):
-                menu_data = {'menu': menu[3]}
-                return menu_data, 200
+                return menu, 200
             else:
                 menu_json = {'message': 'Меню не существует'}
                 return menu_json, 404
