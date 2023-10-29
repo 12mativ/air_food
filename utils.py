@@ -91,9 +91,6 @@ def recognize_time_amount(flight_duration, takeoff_time):
                 return {"breakfast": breakfast_time, "lunch": lunch_time, "dinner": dinner_time}
         
 
-
-
-
 def calculate_eating_amount(flight_duration):
     if(flight_duration >= 1 and flight_duration <= 3):
         return {'amount': 1, 'type': 'cold'}
@@ -122,30 +119,3 @@ def get_menu_array(flight_duration, takeoff_time):
         menu_array.append(list(sorted_time_amount_info.keys())[0])
         menu_array.append(list(sorted_time_amount_info.keys())[1])
         return menu_array
-
-
-print(get_menu_array(4, time(8, 0)))
-
-
-# 1) difference1 = max_завтрак_time - takeoff_time (= 3)
-# 2) if (difference1 > flight_duration) {
-#  время_полета_завтрак = flight_duration
-#  return
-# } else {
-#  flight_duration -= difference1 (flight_duration = 9)
-
-#  if (flight_duration > обед_time) {
-#    flight_duration -= обед_time (flight_duration = 3)
-#  } else {
-#    время_полета_обед = flight_duration
-#    return
-#  }
-# }
-# 4) if (flight_duration < ужин_time) {
-#  время_полета_ужин = flight_duration
-#  return
-# } else {
-#  flight_duration -= ужин_time
-#  время_полета_ужин = flight_duration
-#  return
-# }    
