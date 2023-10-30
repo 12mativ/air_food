@@ -72,35 +72,36 @@ def getMenu(conn, airline_name, flight_duration, class_of_service_data, takeoff_
 
         # Добавляем основные меню
         for service_class in class_of_service_data:
-            cursor.execute(f'''
-                SELECT
-                    m.quality_type,
-                    m.time_type,
-                    m.temperature_type,
-                    ARRAY_AGG(d.name) AS dishes
-                FROM
-                    menu AS m
-                JOIN
-                    menudish AS md ON m.id = md.menu_id
-                JOIN
-                    dish AS d ON md.dish_id = d.id
-                WHERE
-                    m.airline_id = %s
-                    AND m.quality_type = %s
-                    AND m.time_type = %s
-                    AND m.temperature_type = %s
-                GROUP BY
-                    quality_type, time_type, temperature_type;
-            ''', (airline_id, service_class["type"], menu_array_info[0], eating_amount_info["type"]))
+            for item in menu_array_info:
+                cursor.execute(f'''
+                    SELECT
+                        m.quality_type,
+                        m.time_type,
+                        m.temperature_type,
+                        ARRAY_AGG(d.name) AS dishes
+                    FROM
+                        menu AS m
+                    JOIN
+                        menudish AS md ON m.id = md.menu_id
+                    JOIN
+                        dish AS d ON md.dish_id = d.id
+                    WHERE
+                        m.airline_id = %s
+                        AND m.quality_type = %s
+                        AND m.time_type = %s
+                        AND m.temperature_type = %s
+                    GROUP BY
+                        quality_type, time_type, temperature_type;
+                ''', (airline_id, service_class["type"], item, eating_amount_info["type"]))
 
-            result = cursor.fetchall()
-            if result:
-                menu.append({
-                    "quality_type": service_class["type"],
-                    "time_type": menu_array_info[0],
-                    "temperature_type": eating_amount_info["type"],
-                    "dishes": result[0][3]
-                })
+                result = cursor.fetchall()
+                if result:
+                    menu.append({
+                        "quality_type": service_class["type"],
+                        "time_type": item,
+                        "temperature_type": eating_amount_info["type"],
+                        "dishes": result[0][3]
+                    })
 
         # Добавляем специальные меню
         if (special_menu_codes):
