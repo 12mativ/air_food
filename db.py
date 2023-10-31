@@ -98,6 +98,7 @@ def getMenu(conn, airline_name, flight_duration, class_of_service_data, takeoff_
                 if result:
                     menu.append({
                         "quality_type": service_class["type"],
+                        "amount": service_class["amount"],
                         "time_type": item,
                         "temperature_type": eating_amount_info["type"],
                         "dishes": result[0][3]
