@@ -1,5 +1,5 @@
 import psycopg2
-from datetime import datetime, time
+from datetime import time
 import os
 from dotenv import load_dotenv
 from utils import calculate_eating_amount, get_menu_array
@@ -45,12 +45,12 @@ def add_special_menus(conn, airline_id, special_menu_codes):
                 smd.specialmenu_id IN (
                     SELECT id FROM specialmenu WHERE code = %s AND airline_id = %s
                 )
-            LIMIT %s;
-        ''', (special_menu_code["code"], airline_id, special_menu_code["amount"]))
+        ''', (special_menu_code["code"], airline_id))
         special_menu_dishes = cursor.fetchall()
         if special_menu_dishes:
             special_menu = {
                 "code": special_menu_code["code"],
+                "amount": special_menu_code["amount"],
                 "dishes": [dish[1] for dish in special_menu_dishes]
             }
             special_menus.append(special_menu)
