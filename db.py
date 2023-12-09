@@ -25,7 +25,6 @@ def get_airline_id(conn, airline_name):
     if result:
         return result[0]
     else:
-        # Если авиакомпания не найдена, можно вернуть None или выбросить исключение
         return None
 
 
@@ -57,8 +56,7 @@ def add_special_menus(conn, airline_id, special_menu_codes):
     cursor.close()
     return special_menus
 
-# Обновление функции getMenu
-def getMenu(conn, airline_name, flight_duration, class_of_service_data, takeoff_time, landing_time, special_menu_codes):
+def getMenu(conn, airline_name, flight_duration, class_of_service_data, takeoff_time, special_menu_codes):
     airline_id = get_airline_id(conn, airline_name)
 
     if airline_id is not None:
@@ -70,7 +68,6 @@ def getMenu(conn, airline_name, flight_duration, class_of_service_data, takeoff_
         menu = []
         special_menu = [] 
 
-        # Добавляем основные меню
         for service_class in class_of_service_data:
             for item in menu_array_info:
                 cursor.execute(f'''
@@ -104,7 +101,6 @@ def getMenu(conn, airline_name, flight_duration, class_of_service_data, takeoff_
                         "dishes": result[0][3]
                     })
 
-        # Добавляем специальные меню
         if (special_menu_codes):
             special_menus = add_special_menus(conn, airline_id, special_menu_codes)
             special_menu.extend(special_menus)

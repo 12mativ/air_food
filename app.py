@@ -41,9 +41,6 @@ class MenuResource(Resource):
             elif ("takeoff_time") not in reqBody:
                 error_message = "Параметр 'takeoff_time' отсутствует в запросе."
                 return {'error': error_message}, 400
-            elif ("landing_time") not in reqBody:
-                error_message = "Параметр 'landing_time' отсутствует в запросе."
-                return {'error': error_message}, 400
             elif ("airline_name") not in reqBody:
                 error_message = "Параметр 'airline_name' отсутствует в запросе."
                 return {'error': error_message}, 400
@@ -55,7 +52,6 @@ class MenuResource(Resource):
                 reqBody["flight_duration"], 
                 reqBody["class_of_service_data"],
                 reqBody["takeoff_time"],
-                reqBody["landing_time"],
                 reqBody["special_menu_codes"],
             ) 
             if (menu):
