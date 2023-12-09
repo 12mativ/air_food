@@ -1,4 +1,10 @@
 from datetime import datetime, time
+from dotenv import load_dotenv
+import requests
+import os
+import pytz
+
+load_dotenv()
 
 # Определение времени начала и конца каждого интервала
 breakfast_start = time(5, 0)
@@ -119,3 +125,50 @@ def get_menu_array(flight_duration, takeoff_time):
         menu_array.append(list(sorted_time_amount_info.keys())[0])
         menu_array.append(list(sorted_time_amount_info.keys())[1])
         return menu_array
+    
+def convert_time_to_float(date_time_string):
+  # Преобразование строки в объект datetime
+
+  # Получение часов и минут
+  hours = date_time_string.hour
+  minutes = date_time_string.minute
+
+  # Преобразование часов и минут в общее количество минут
+  total_minutes = hours * 60 + minutes
+
+  # Преобразование общего количества минут в часы с плавающей точкой
+  float_time = total_minutes / 60
+
+  return float_time
+    
+def get_flights():
+    params = {
+    'access_key': os.environ['FLIGHT_RADAR_KEY'],
+    'airline_icao' :'AFL'
+    }
+
+    api_result = requests.get('http://api.aviationstack.com/v1/flights', params)
+
+    api_response = api_result.json()
+
+    flights = []
+    for flight in api_response['data']:
+        # if flight['airline']['icao'] == desired_airline_icao:
+            current_flight = {}
+            departure_time_str = flight['departure']['scheduled']
+            arrival_time_str = flight['arrival']['scheduled']
+
+            departure_time = datetime.fromisoformat(departure_time_str[:-6]).replace(tzinfo=pytz.utc)  
+            arrival_time = datetime.fromisoformat(arrival_time_str[:-6]).replace(tzinfo=pytz.utc)  
+            takeoff_date = departure_time.date()
+
+            duration_hours = round((arrival_time - departure_time).total_seconds() / 3600, 2)
+            departure_time_float = round(convert_time_to_float(departure_time), 2)
+
+            current_flight['airline_name'] = "Аэрофлот"
+            current_flight['takeoff_date'] = takeoff_date
+            current_flight['takeoff_time'] = departure_time_float
+            current_flight['flight_duration'] = duration_hours
+
+            flights.append(current_flight)
+    return flights

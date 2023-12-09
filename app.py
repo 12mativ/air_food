@@ -3,6 +3,7 @@ from flask_cors import CORS
 from db import getMenu, get_db_connection, getAirlines
 import json
 from flask_restx import Api, Resource, fields, marshal
+from utils import get_flights
 
 app = Flask(__name__)
 CORS(app)
@@ -17,6 +18,15 @@ airline_model = api.model('Airline', {
     'airlines': fields.List(fields.Nested(api.model('AirlineInfo', {
         'id': fields.String,
         'name': fields.String,
+    }))),
+})
+
+flight_model = api.model('Flight', {
+    'flights': fields.List(fields.Nested(api.model('FlightInfo', {
+        'airline_name': fields.String,
+        'takeoff_date': fields.String,
+        'takeoff_time': fields.Float,
+        'flight_duration': fields.Float
     }))),
 })
 
@@ -61,6 +71,24 @@ class MenuResource(Resource):
                 return menu_json, 404
         except Exception as e:
             raise e
+
+@api.route('/flights')
+class FlightsResource(Resource):
+    @api.marshal_with(flight_model, as_list=True)
+    def get(self):
+        """
+        Get the list of available flights.
+        """
+        try:
+
+            result = get_flights()
+            if (result):
+                return {'flights': result}, 200
+            else:
+                return {'error': 'Рейсы не найдены'}, 404
+        except Exception as e:
+            raise e
+    
     
 
 @api.route('/airlines')
