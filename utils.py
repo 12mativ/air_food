@@ -144,7 +144,8 @@ def convert_time_to_float(date_time_string):
 def get_flights(limit=10):
     params = {
         'access_key': os.environ['FLIGHT_RADAR_KEY'],
-        'airline_icao' :'AFL'
+        'airline_icao' :'AFL',
+        'limit': 10
     }
 
     api_result = requests.get('http://api.aviationstack.com/v1/flights', params)
@@ -152,7 +153,7 @@ def get_flights(limit=10):
     api_response = api_result.json()
 
     flights = []
-    for flight in api_response['data'][:limit]:
+    for flight in api_response['data']:
             current_flight = {}
             departure_time_str = flight['departure']['scheduled']
             arrival_time_str = flight['arrival']['scheduled']
@@ -168,6 +169,7 @@ def get_flights(limit=10):
             current_flight['takeoff_date'] = takeoff_date
             current_flight['takeoff_time'] = departure_time_float
             current_flight['flight_duration'] = duration_hours
-
+            if (duration_hours <= 0):
+                continue
             flights.append(current_flight)
     return flights
