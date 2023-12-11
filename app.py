@@ -80,9 +80,10 @@ class FlightsResource(Resource):
         Get the list of available flights.
         """
         try:
-            limit = request.args.get('limit', default=10, type=int)
             result = get_flights()
             if (result):
+                return {'flights': result}, 200
+            elif (len(result) == 0):
                 return {'flights': result}, 200
             else:
                 return {'error': 'Рейсы не найдены'}, 404
